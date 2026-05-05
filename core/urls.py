@@ -10,6 +10,6 @@ urlpatterns = [
     path('lesson-editor/', TemplateView.as_view(template_name='lesson_editor.html'), name='lesson_editor'),
     path('lesson/', TemplateView.as_view(template_name='lesson_view.html'), name='lesson_view'),
     path('teacher/', TemplateView.as_view(template_name='teacher_panel.html'), name='teacher_panel'),
+    path('chat/', TemplateView.as_view(template_name='chat.html'), name='chat'),
     path('', TemplateView.as_view(template_name='student_dashboard.html'), name='student_dashboard'),
 ]
-    path('chat/', TemplateView.as_view(template_name='chat.html'), name='chat'),
