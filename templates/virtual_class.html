@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Виртуальный класс - Anecole</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: #1a1a2e; }
+        .class-container { display: flex; flex-direction: column; height: 100vh; }
+        .video-area { flex: 3; background: #0f0f1a; display: flex; align-items: center; justify-content: center; position: relative; }
+        #teacherVideo { width: 100%; height: 100%; object-fit: cover; background: #000; }
+        .controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 16px; background: rgba(0,0,0,0.7); padding: 12px 24px; border-radius: 50px; }
+        .controls button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; }
+        .controls button.off { background: #ef4444; }
+        .chat-area { flex: 1; background: white; display: flex; flex-direction: column; border-top: 1px solid #e2e8f0; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
+        .chat-message { margin-bottom: 12px; padding: 8px 12px; background: #f8fafc; border-radius: 16px; max-width: 80%; }
+        .chat-message.teacher { background: #dbeafe; margin-left: auto; }
+        .chat-message .name { font-weight: 600; font-size: 12px; color: #3b82f6; margin-bottom: 4px; }
+        .chat-input-area { display: flex; padding: 12px; border-top: 1px solid #e2e8f0; gap: 12px; }
+        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 30px; }
+        .participants-panel { position: absolute; right: 20px; top: 20px; background: rgba(0,0,0,0.7); border-radius: 16px; padding: 12px; min-width: 150px; color: white; }
+        .participant { padding: 6px 12px; margin: 4px 0; border-radius: 8px; background: rgba(255,255,255,0.1); }
+        .participant.teacher { background: #3b82f6; }
+        .participant.hand-raised { background: #f59e0b; }
+        .hidden { display: none; }
+        .join-screen { text-align: center; padding: 50px; background: white; border-radius: 28px; max-width: 400px; margin: 100px auto; }
+        .join-screen button { padding: 12px 30px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div id="joinScreen" class="join-screen">
+        <h2>🎥 Виртуальный класс</h2>
+        <p id="lessonInfo">Загрузка...</p>
+        <button onclick="joinClass()">Войти в класс</button>
+    </div>
+
+    <div id="classroom" class="class-container hidden">
+        <div class="video-area">
+            <video id="teacherVideo" autoplay playsinline></video>
+            <div class="participants-panel" id="participantsPanel">
+                <div style="font-size: 12px; margin-bottom: 8px;">👥 Участники</div>
+                <div id="participantsList"></div>
+            </div>
+            <div class="controls">
+                <button id="micBtn" onclick="toggleMic()">🎤 Микрофон</button>
+                <button id="cameraBtn" onclick="toggleCamera()">📷 Камера</button>
+                <button id="handBtn" onclick="raiseHand()">✋ Поднять руку</button>
+                <button onclick="leaveClass()">🚪 Выйти</button>
+            </div>
+        </div>
+        <div class="chat-area">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message"><div class="name">Система</div>Добро пожаловать в класс!</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Напишите сообщение..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/index.umd.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const lessonId = urlParams.get('lesson_id') || 1;
+        let room = null;
+        let isTeacher = false;
+        let currentUser = null;
+
+        async function getToken() {
+            // Получаем пользователя из localStorage
+            const saved = localStorage.getItem('currentUser');
+            if (saved) currentUser = JSON.parse(saved);
+            if (!currentUser) {
+                window.location.href = '/';
+                return null;
+            }
+            isTeacher = currentUser.role === 'teacher';
+            
+            const res = await fetch(`/api/livekit/token/${lessonId}/`);
+            const data = await res.json();
+            return data.token;
+        }
+
+        async function joinClass() {
+            const token = await getToken();
+            if (!token) return;
+            
+            document.getElementById('joinScreen').classList.add('hidden');
+            document.getElementById('classroom').classList.remove('hidden');
+            
+            room = new Livekit.Room();
+            
+            room.on(Livekit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                if (track.kind === 'video') {
+                    const videoEl = document.getElementById('teacherVideo');
+                    track.attach(videoEl);
+                }
+            });
+            
+            room.on(Livekit.RoomEvent.ParticipantConnected, (participant) => {
+                updateParticipants();
+                addChatMessage('Система', `${participant.identity} присоединился`);
+            });
+            
+            room.on(Livekit.RoomEvent.ParticipantDisconnected, (participant) => {
+                updateParticipants();
+                addChatMessage('Система', `${participant.identity} покинул`);
+            });
+            
+            room.on(Livekit.RoomEvent.DataReceived, (payload, participant) => {
+                const data = JSON.parse(new TextDecoder().decode(payload));
+                if (data.type === 'chat') {
+                    addChatMessage(participant.identity, data.message);
+                } else if (data.type === 'hand') {
+                    addChatMessage('Система', `${participant.identity} поднял(а) руку ✋`);
+                    updateParticipants();
+                }
+            });
+            
+            await room.connect('ws://localhost:7880', token);
+            
+            if (isTeacher) {
+                await room.localParticipant.setCameraEnabled(true);
+                await room.localParticipant.setMicrophoneEnabled(true);
+            }
+            
+            updateParticipants();
+        }
+        
+        async function toggleMic() {
+            const enabled = room.localParticipant.isMicrophoneEnabled;
+            await room.localParticipant.setMicrophoneEnabled(!enabled);
+            document.getElementById('micBtn').style.background = !enabled ? '#10b981' : '#ef4444';
+        }
+        
+        async function toggleCamera() {
+            const enabled = room.localParticipant.isCameraEnabled;
+            await room.localParticipant.setCameraEnabled(!enabled);
+            document.getElementById('cameraBtn').style.background = !enabled ? '#10b981' : '#ef4444';
+        }
+        
+        function raiseHand() {
+            const data = JSON.stringify({ type: 'hand' });
+            room.localParticipant.publishData(new TextEncoder().encode(data));
+            addChatMessage('Вы', 'Вы подняли руку ✋');
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value;
+            if (!message) return;
+            
+            const data = JSON.stringify({ type: 'chat', message });
+            room.localParticipant.publishData(new TextEncoder().encode(data));
+            addChatMessage('Вы', message);
+            input.value = '';
+        }
+        
+        function addChatMessage(sender, message) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `chat-message ${sender === 'Вы' ? 'teacher' : ''}`;
+            div.innerHTML = `<div class="name">${sender}</div>${message}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function updateParticipants() {
+            const container = document.getElementById('participantsList');
+            if (!room) return;
+            
+            let html = `<div class="participant teacher">👩‍🏫 ${room.localParticipant.identity} ${isTeacher ? '(Вы)' : ''}</div>`;
+            room.remoteParticipants.forEach(p => {
+                html += `<div class="participant">👤 ${p.identity}</div>`;
+            });
+            container.innerHTML = html;
+        }
+        
+        function leaveClass() {
+            room?.disconnect();
+            window.location.href = '/';
+        }
+        
+        // Загрузка информации об уроке
+        fetch(`/api/lessons/${lessonId}/`).then(r => r.json()).then(lesson => {
+            document.getElementById('lessonInfo').innerHTML = `<strong>${lesson.title}</strong><br>Нажмите для входа`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор уроков - Anecole</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fb;
+        }
+        .editor {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar с шаблонами */
+        .templates-panel {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e9eef3;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .template-group {
+            margin-bottom: 24px;
+        }
+        .template-group h4 {
+            font-size: 12px;
+            color: #8e9aaf;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .template-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .template-item:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        /* Основная область */
+        .lesson-canvas {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        .lesson-header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .lesson-header input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        /* Блок упражнения */
+        .exercise-block {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .exercise-header {
+            background: #f8fafc;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9eef3;
+            cursor: move;
+        }
+        .exercise-type {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        .exercise-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 8px;
+        }
+        .exercise-content {
+            padding: 20px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        button.secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .save-bar {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 300px;
+            background: white;
+            padding: 16px 30px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin: 8px 0;
+        }
+        .test-option {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .test-option input { flex: 1; }
+        .test-option button { background: #ef4444; padding: 6px 12px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="editor">
+    <!-- Панель шаблонов -->
+    <div class="templates-panel">
+        <h3 style="margin-bottom: 20px;">📦 Добавить блок</h3>
+        
+        <div class="template-group">
+            <h4>📝 Текст и медиа</h4>
+            <div class="template-item" onclick="addBlock('text')">📄 Текст</div>
+            <div class="template-item" onclick="addBlock('image')">🖼 Изображение</div>
+            <div class="template-item" onclick="addBlock('video')">🎬 Видео</div>
+            <div class="template-item" onclick="addBlock('audio')">🎵 Аудио</div>
+        </div>
+        
+        <div class="template-group">
+            <h4>📊 Тесты</h4>
+            <div class="template-item" onclick="addBlock('multiple_choice')">✅ Множественный выбор</div>
+            <div class="template-item" onclick="addBlock('true_false')">✓✗ Верно/Неверно</div>
+            <div class="template-item" onclick="addBlock('fill_blank')">📝 Заполнить пропуск</div>
+            <div class="template-item" onclick="addBlock('matching')">🔗 Сопоставление</div>
+        </div>
+        
+        <div class="template-group">
+            <h4>🎮 Интерактив</h4>
+            <div class="template-item" onclick="addBlock('drag_drop')">🖱 Drag & Drop</div>
+            <div class="template-item" onclick="addBlock('sorting')">📊 Сортировка</div>
+            <div class="template-item" onclick="addBlock('word_bank')">📚 Набор слов</div>
+        </div>
+        
+        <div class="template-group">
+            <h4>🏠 Домашнее задание</h4>
+            <div class="template-item" onclick="addBlock('homework')">✏️ Домашнее задание</div>
+        </div>
+    </div>
+    
+    <!-- Основная область -->
+    <div class="lesson-canvas">
+        <div class="lesson-header">
+            <input type="text" id="lessonTitle" placeholder="Название урока">
+            <textarea id="lessonDescription" rows="2" placeholder="Описание урока..."></textarea>
+        </div>
+        
+        <div id="blocksContainer"></div>
+        
+        <div style="text-align: center; padding: 40px;">
+            <button class="secondary" onclick="addBlock('text')">+ Добавить первый блок</button>
+        </div>
+    </div>
+    
+    <!-- Панель сохранения -->
+    <div class="save-bar">
+        <button onclick="previewLesson()">👁 Предпросмотр</button>
+        <button onclick="saveLesson()">💾 Сохранить урок</button>
+    </div>
+</div>
+
+<script>
+    let blocks = [];
+    let blockId = 0;
+    
+    function addBlock(type) {
+        const newBlock = {
+            id: blockId++,
+            type: type,
+            data: getDefaultData(type)
+        };
+        blocks.push(newBlock);
+        renderBlocks();
+    }
+    
+    function getDefaultData(type) {
+        switch(type) {
+            case 'text':
+                return { content: 'Новый текст...' };
+            case 'multiple_choice':
+                return { question: 'Вопрос?', options: ['Вариант 1', 'Вариант 2'], correct: 0 };
+            case 'true_false':
+                return { question: 'Утверждение?', correct: true };
+            case 'fill_blank':
+                return { text: 'Hello ___!', answer: 'world' };
+            case 'matching':
+                return { pairs: [['Слово 1', 'Translation 1'], ['Слово 2', 'Translation 2']] };
+            case 'homework':
+                return { task: 'Напишите решение...', attachments: [] };
+            default:
+                return { content: 'Новый блок' };
+        }
+    }
+    
+    function renderBlocks() {
+        const container = document.getElementById('blocksContainer');
+        container.innerHTML = '';
+        
+        blocks.forEach((block, idx) => {
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'exercise-block';
+            blockDiv.innerHTML = `
+                <div class="exercise-header">
+                    <span class="exercise-type">${getTypeName(block.type)}</span>
+                    <div class="exercise-actions">
+                        <button onclick="moveBlock(${idx}, 'up')">↑</button>
+                        <button onclick="moveBlock(${idx}, 'down')">↓</button>
+                        <button onclick="deleteBlock(${idx})">🗑</button>
+                    </div>
+                </div>
+                <div class="exercise-content" id="block-${block.id}">
+                    ${renderBlockContent(block)}
+                </div>
+            `;
+            container.appendChild(blockDiv);
+        });
+    }
+    
+    function renderBlockContent(block) {
+        switch(block.type) {
+            case 'text':
+                return `<textarea rows="4" onchange="updateBlock(${block.id}, 'content', this.value)">${block.data.content}</textarea>`;
+                
+            case 'multiple_choice':
+                return `
+                    <input value="${block.data.question}" onchange="updateBlock(${block.id}, 'question', this.value)" placeholder="Вопрос">
+                    ${block.data.options.map((opt, i) => `
+                        <div class="test-option">
+                            <input value="${opt}" onchange="updateOption(${block.id}, ${i}, this.value)">
+                            <button onclick="removeOption(${block.id}, ${i})">✕</button>
+                        </div>
+                    `).join('')}
+                    <button onclick="addOption(${block.id})" class="secondary">+ Добавить вариант</button>
+                `;
+                
+            case 'true_false':
+                return `
+                    <p>${block.data.question}</p>
+                    <select onchange="updateBlock(${block.id}, 'correct', this.value === 'true')">
+                        <option value="true" ${block.data.correct ? 'selected' : ''}>Верно</option>
+                        <option value="false" ${!block.data.correct ? 'selected' : ''}>Неверно</option>
+                    </select>
+                `;
+                
+            case 'fill_blank':
+                return `
+                    <p>Текст с пропуском ___</p>
+                    <input value="${block.data.text}" onchange="updateBlock(${block.id}, 'text', this.value)">
+                    <input value="${block.data.answer}" onchange="updateBlock(${block.id}, 'answer', this.value)" placeholder="Правильный ответ">
+                `;
+                
+            case 'homework':
+                return `
+                    <textarea rows="3" onchange="updateBlock(${block.id}, 'task', this.value)" placeholder="Задание...">${block.data.task}</textarea>
+                    <button class="secondary">📎 Прикрепить файл</button>
+                `;
+                
+            default:
+                return `<p>Блок в разработке</p>`;
+        }
+    }
+    
+    function getTypeName(type) {
+        const names = {
+            text: '📄 Текст',
+            image: '🖼 Изображение',
+            video: '🎬 Видео',
+            audio: '🎵 Аудио',
+            multiple_choice: '✅ Тест: выбор ответа',
+            true_false: '✓✗ Верно/Неверно',
+            fill_blank: '📝 Заполнить пропуск',
+            matching: '🔗 Сопоставление',
+            drag_drop: '🖱 Drag & Drop',
+            sorting: '📊 Сортировка',
+            word_bank: '📚 Набор слов',
+            homework: '✏️ Домашнее задание'
+        };
+        return names[type] || type;
+    }
+    
+    function updateBlock(blockId, field, value) {
+        const block = blocks.find(b => b.id === blockId);
+        if (block) {
+            block.data[field] = value;
+        }
+    }
+    
+    function updateOption(blockId, optionIdx, value) {
+        const block = blocks.find(b => b.id === blockId);
+        if (block && block.data.options) {
+            block.data.options[optionIdx] = value;
+        }
+    }
+    
+    function addOption(blockId) {
+        const block = blocks.find(b => b.id === blockId);
+        if (block && block.data.options) {
+            block.data.options.push('Новый вариант');
+            renderBlocks();
+        }
+    }
+    
+    function removeOption(blockId, optionIdx) {
+        const block = blocks.find(b => b.id === blockId);
+        if (block && block.data.options) {
+            block.data.options.splice(optionIdx, 1);
+            renderBlocks();
+        }
+    }
+    
+    function moveBlock(idx, direction) {
+        if (direction === 'up' && idx > 0) {
+            [blocks[idx-1], blocks[idx]] = [blocks[idx], blocks[idx-1]];
+        } else if (direction === 'down' && idx < blocks.length - 1) {
+            [blocks[idx], blocks[idx+1]] = [blocks[idx+1], blocks[idx]];
+        }
+        renderBlocks();
+    }
+    
+    function deleteBlock(idx) {
+        blocks.splice(idx, 1);
+        renderBlocks();
+    }
+    
+    function previewLesson() {
+        alert('Предпросмотр урока (будет открыта отдельная страница)');
+    }
+    
+    async function saveLesson() {
+        const lessonData = {
+            title: document.getElementById('lessonTitle').value,
+            description: document.getElementById('lessonDescription').value,
+            blocks: blocks,
+            lesson_type: 'async'
+        };
+        
+        console.log('Сохраняем урок:', lessonData);
+        alert('Урок сохранён! (Данные в консоли)');
+    }
+    
+    // Инициализация с примерами
+    addBlock('text');
+    addBlock('multiple_choice');
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест виртуального класса</title>
+    <style>
+        body { font-family: system-ui; max-width: 900px; margin: 50px auto; padding: 20px; }
+        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin: 20px 0; }
+        button { background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; }
+        input, select { padding: 10px; margin: 5px; border: 1px solid #ddd; border-radius: 10px; }
+        .hidden { display: none; }
+        #video-container { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+        video { background: #1e293b; border-radius: 16px; width: 300px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/index.umd.js"></script>
+</head>
+<body>
+    <h1>🎥 Тест виртуального класса (LiveKit)</h1>
+    
+    <div class="card">
+        <h3>Настройки</h3>
+        <label>Урок ID: <input type="number" id="lesson-id" value="1"></label>
+        <label>Имя пользователя: <input type="text" id="username" value="student"></label>
+        <label>Роль: 
+            <select id="role">
+                <option value="student">Ученик</option>
+                <option value="teacher">Учитель</option>
+            </select>
+        </label>
+        <button id="connect-btn">🔗 Подключиться</button>
+    </div>
+    
+    <div id="classroom" class="hidden">
+        <div class="card">
+            <h3>Видео</h3>
+            <div id="video-container"></div>
+            <div style="margin-top: 20px;">
+                <button id="toggle-camera">🎥 Камера</button>
+                <button id="toggle-mic">🎤 Микрофон</button>
+                <button id="disconnect-btn">🚪 Выйти</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let room = null;
+        let isTeacher = false;
+        
+        async function getToken(lessonId, username, role) {
+            const loginRes = await fetch('/api/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, password: username === 'teacher' ? 'teacher123' : 'student123' })
+            });
+            const loginData = await loginRes.json();
+            
+            if (!loginData.success) {
+                alert('Ошибка входа: ' + (loginData.message || 'Неверные данные'));
+                return null;
+            }
+            
+            const tokenRes = await fetch(`/api/livekit/token/${lessonId}/`);
+            const tokenData = await tokenRes.json();
+            return tokenData.token;
+        }
+        
+        document.getElementById('connect-btn').onclick = async () => {
+            const lessonId = document.getElementById('lesson-id').value;
+            const username = document.getElementById('username').value;
+            const role = document.getElementById('role').value;
+            isTeacher = role === 'teacher';
+            
+            document.getElementById('connect-btn').disabled = true;
+            document.getElementById('connect-btn').textContent = 'Подключение...';
+            
+            const token = await getToken(lessonId, username, role);
+            
+            if (!token) {
+                alert('Не удалось получить токен');
+                document.getElementById('connect-btn').disabled = false;
+                document.getElementById('connect-btn').textContent = '🔗 Подключиться';
+                return;
+            }
+            
+            room = new Livekit.Room();
+            
+            room.on(Livekit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                if (track.kind === 'video') {
+                    const container = document.getElementById('video-container');
+                    const videoElement = document.createElement('video');
+                    videoElement.autoplay = true;
+                    videoElement.style.width = '300px';
+                    videoElement.style.background = '#000';
+                    videoElement.style.borderRadius = '16px';
+                    track.attach(videoElement);
+                    container.appendChild(videoElement);
+                }
+            });
+            
+            room.on(Livekit.RoomEvent.Disconnected, () => {
+                document.getElementById('classroom').classList.add('hidden');
+            });
+            
+            try {
+                await room.connect('ws://localhost:7880', token);
+                
+                if (isTeacher) {
+                    await room.localParticipant.setCameraEnabled(true);
+                    await room.localParticipant.setMicrophoneEnabled(true);
+                }
+                
+                document.getElementById('classroom').classList.remove('hidden');
+                document.getElementById('connect-btn').disabled = false;
+                document.getElementById('connect-btn').textContent = '🔗 Подключиться';
+                
+                if (isTeacher && room.localParticipant.videoTrackPublications.size > 0) {
+                    const container = document.getElementById('video-container');
+                    const videoElement = document.createElement('video');
+                    videoElement.autoplay = true;
+                    videoElement.muted = true;
+                    videoElement.style.width = '300px';
+                    videoElement.style.background = '#000';
+                    videoElement.style.borderRadius = '16px';
+                    room.localParticipant.videoTrackPublications.forEach(pub => {
+                        pub.track?.attach(videoElement);
+                    });
+                    container.appendChild(videoElement);
+                }
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+                document.getElementById('connect-btn').disabled = false;
+                document.getElementById('connect-btn').textContent = '🔗 Подключиться';
+            }
+        };
+        
+        document.getElementById('toggle-camera')?.addEventListener('click', async () => {
+            if (room) {
+                const enabled = room.localParticipant.isCameraEnabled;
+                await room.localParticipant.setCameraEnabled(!enabled);
+            }
+        });
+        
+        document.getElementById('toggle-mic')?.addEventListener('click', async () => {
+            if (room) {
+                const enabled = room.localParticipant.isMicrophoneEnabled;
+                await room.localParticipant.setMicrophoneEnabled(!enabled);
+            }
+        });
+        
+        document.getElementById('disconnect-btn')?.addEventListener('click', async () => {
+            if (room) {
+                await room.disconnect();
+                document.getElementById('classroom').classList.add('hidden');
+                document.getElementById('video-container').innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>

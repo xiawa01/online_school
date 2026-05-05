@@ -1,0 +1,137 @@
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import User, Lesson, StudentProgress
+from django.contrib.auth.hashers import check_password
+
+@api_view(['POST'])
+def login_api(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    try:
+        user = User.objects.get(username=username)
+        if check_password(password, user.password):
+            return Response({
+                'success': True,
+                'user': {
+                    'id': user.id,
+                    'name': user.first_name or user.username,
+                    'progress': user.progress,
+                    'role': user.role
+                }
+            })
+    except User.DoesNotExist:
+        pass
+    
+    return Response({'success': False, 'message': 'Неверные данные'}, status=401)
+
+@api_view(['GET'])
+def lessons_list(request):
+    lessons = Lesson.objects.all().values('id', 'title', 'order', 'lesson_type')
+    return Response(list(lessons))
+
+@api_view(['GET'])
+def lesson_detail(request, id):
+    lesson = get_object_or_404(Lesson, id=id)
+    return Response({
+        'id': lesson.id,
+        'title': lesson.title,
+        'content': lesson.content_text,
+        'lesson_type': lesson.lesson_type,
+        'video_url': lesson.video_url,
+        'test': lesson.test_data,
+        'homework_task': lesson.homework_task
+    })
+
+@api_view(['POST'])
+def complete_lesson(request):
+    user_id = request.data.get('userId')
+    lesson_id = request.data.get('lessonId')
+    
+    user = get_object_or_404(User, id=user_id)
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    
+    # Отмечаем прогресс
+    progress, created = StudentProgress.objects.get_or_create(
+        student=user,
+        lesson=lesson,
+        defaults={'is_completed': True, 'completed_at': timezone.now()}
+    )
+    
+    if not progress.is_completed:
+        progress.is_completed = True
+        progress.completed_at = timezone.now()
+        progress.save()
+    
+    # Обновляем поле progress в User
+    if lesson_id not in user.progress:
+        user.progress.append(lesson_id)
+        user.save()
+    
+    return Response({'success': True, 'progress': user.progress})
+
+@api_view(['GET'])
+def get_homework(request, lesson_id):
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    return Response({'task': lesson.homework_task})
+
+@api_view(['POST'])
+def submit_homework(request):
+    answer = request.data.get('answer', '')
+    
+    if len(answer) < 10:
+        feedback = "🤔 Попробуйте дать более развернутый ответ."
+    elif "ошибка" in answer.lower() or "error" in answer.lower():
+        feedback = "💡 Хорошая попытка! Проверьте код на синтаксические ошибки."
+    else:
+        feedback = "✅ Отлично! Задание принято. Преподаватель свяжется при необходимости."
+    
+    return Response({'success': True, 'feedback': feedback})
+
+# school/views.py — добавьте функцию для генерации токена
+from livekit import api
+import jwt
+import time
+
+def generate_livekit_token(room_name, participant_name, is_teacher=False):
+    """Генерация JWT токена для LiveKit"""
+    api_key = "your-api-key"
+    api_secret = "your-secret-key"
+    
+    token = jwt.encode(
+        {
+            "exp": int(time.time()) + 3600,
+            "iss": api_key,
+            "name": participant_name,
+            "video": {
+                "room": room_name,
+                "roomJoin": True,
+                "canPublish": is_teacher,
+                "canSubscribe": True,
+            },
+        },
+        api_secret,
+        algorithm="HS256",
+    )
+    return token
+
+@api_view(['GET'])
+def get_livekit_token(request, lesson_id):
+    """Получить токен для входа в виртуальный класс"""
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    is_teacher = request.user.role == 'teacher'
+    
+    token = generate_livekit_token(
+        room_name=f"lesson_{lesson_id}",
+        participant_name=request.user.username,
+        is_teacher=is_teacher
+    )
+    
+    return Response({
+        'token': token,
+        'lesson_id': lesson_id,
+        'is_teacher': is_teacher
+    })
