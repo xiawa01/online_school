@@ -158,3 +158,25 @@ class HomeworkFile(models.Model):
     
     def __str__(self):
         return self.filename
+
+class ClassRoom(models.Model):
+    name = models.CharField(max_length=100)  # Группа A1, HSK 1 и т.д.
+    hsk_level = models.IntegerField(choices=[(i, f'HSK {i}') for i in range(1, 7)], null=True, blank=True)
+    description = models.TextField(blank=True)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='classes')
+    students = models.ManyToManyField(User, related_name='enrolled_classes', blank=True)
+    current_lesson = models.IntegerField(default=1)  # Текущий урок
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} (HSK {self.hsk_level})" if self.hsk_level else self.name
+
+class StudentProgressHSK(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    class_room = models.ForeignKey(ClassRoom, on_delete=models.CASCADE)
+    current_hsk_level = models.IntegerField(default=1)  # 1-6
+    current_lesson = models.IntegerField(default=1)  # Урок в рамках уровня
+    completed_lessons = models.JSONField(default=list)
+    
+    class Meta:
+        unique_together = ['student', 'class_room']

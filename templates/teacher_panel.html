@@ -8,99 +8,68 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f7f9fc; }
         
-        /* Header */
         .header { background: white; padding: 16px 32px; border-bottom: 1px solid #e9eef3; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
-        .header-right { display: flex; align-items: center; gap: 24px; }
-        .teacher-name { font-weight: 500; color: #1e293b; }
-        .logout-btn { background: #e2e8f0; color: #1e293b; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-size: 14px; }
-        
-        /* Main layout */
         .main-container { display: flex; min-height: calc(100vh - 73px); }
         
-        /* Sidebar */
         .sidebar { width: 260px; background: white; border-right: 1px solid #e9eef3; padding: 24px 16px; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 4px 0; border-radius: 12px; color: #5a6874; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        .nav-item:hover { background: #f1f5f9; color: #1e293b; }
-        .nav-item.active { background: #3b82f6; color: white; }
+        .nav-item:hover, .nav-item.active { background: #3b82f6; color: white; }
         
-        /* Content */
         .content { flex: 1; padding: 32px; overflow-y: auto; }
         .page-title { font-size: 24px; font-weight: 600; margin-bottom: 24px; color: #1e293b; }
         
-        /* Calendar styles */
+        /* Calendar */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
-        .month-nav { display: flex; align-items: center; gap: 16px; }
-        .month-nav button { background: white; border: 1px solid #e2e8f0; border-radius: 30px; padding: 8px 16px; cursor: pointer; font-size: 14px; }
-        .month-nav button:hover { background: #f1f5f9; }
-        .current-month { font-size: 20px; font-weight: 600; }
-        
+        .month-nav button { background: white; border: 1px solid #e2e8f0; border-radius: 30px; padding: 8px 16px; cursor: pointer; }
         .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 8px; }
-        .weekday { text-align: center; padding: 12px; font-weight: 600; color: #8e9aaf; font-size: 14px; }
-        
+        .weekday { text-align: center; padding: 12px; font-weight: 600; color: #8e9aaf; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; background: #f8fafc; border-radius: 20px; padding: 16px; }
-        .calendar-day { background: white; border-radius: 16px; padding: 12px; min-height: 140px; border: 1px solid #e9eef3; position: relative; }
+        .calendar-day { background: white; border-radius: 16px; padding: 12px; min-height: 140px; border: 1px solid #e9eef3; }
         .calendar-day.today { background: #eff6ff; border-color: #3b82f6; }
-        .day-number { font-weight: 600; margin-bottom: 8px; color: #1e293b; }
-        .calendar-day.other-month .day-number { color: #cbd5e1; }
+        .day-number { font-weight: 600; margin-bottom: 8px; }
         .lesson-item-cal { background: #dbeafe; border-radius: 8px; padding: 4px 8px; margin-bottom: 4px; font-size: 11px; cursor: pointer; }
-        .lesson-item-cal:hover { background: #3b82f6; color: white; }
-        .student-name { font-size: 10px; color: #5a6874; margin-top: 2px; }
         
-        /* Students list */
-        .students-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
-        .search-box { padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 30px; width: 250px; }
-        .add-student-btn { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; }
-        
-        .students-table { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        /* Students Table */
+        .students-table { background: white; border-radius: 20px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 16px; text-align: left; border-bottom: 1px solid #e9eef3; }
-        th { background: #f8fafc; font-weight: 600; color: #1e293b; }
-        .student-avatar { width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 14px; margin-right: 12px; }
-        .enter-class-btn { background: #10b981; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 12px; }
-        .enter-class-btn:hover { background: #059669; }
+        th { background: #f8fafc; font-weight: 600; }
+        .enter-class-btn { background: #10b981; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
+        .hsk-badge { background: #3b82f6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
         
-        /* Classes list */
+        /* Classes Grid */
         .classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .class-card { background: white; border-radius: 20px; padding: 20px; transition: transform 0.2s; cursor: pointer; border: 1px solid #e9eef3; }
+        .class-card { background: white; border-radius: 20px; padding: 20px; cursor: pointer; border: 1px solid #e9eef3; transition: transform 0.2s; }
         .class-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .class-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1e293b; }
+        .class-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
         .class-info { font-size: 13px; color: #5a6874; margin-bottom: 16px; }
         .student-badge { display: inline-block; background: #f1f5f9; border-radius: 20px; padding: 4px 12px; font-size: 12px; margin-right: 6px; margin-bottom: 6px; }
-        .enter-class-big { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 12px; width: 100%; }
         
-        /* Modal */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 28px; max-width: 450px; width: 90%; padding: 28px; }
+        .modal-content { background: white; border-radius: 28px; max-width: 500px; width: 90%; padding: 28px; }
         .hidden { display: none; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0 16px 0; border: 1px solid #e2e8f0; border-radius: 12px; }
-        
-        .view-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
-        .view-btn { background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; }
-        .view-btn.active { background: #3b82f6; color: white; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 12px; }
         
         @media (max-width: 768px) {
-            .sidebar { width: 80px; padding: 16px 8px; }
+            .sidebar { width: 80px; }
             .nav-item span { display: none; }
-            .nav-item { justify-content: center; }
-            .calendar-grid { gap: 4px; padding: 8px; }
-            .calendar-day { padding: 6px; min-height: 80px; }
-            .students-table { font-size: 12px; overflow-x: auto; display: block; }
+            .students-table { overflow-x: auto; display: block; }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo" onclick="showTab('calendar')">Xialin</div>
-        <div class="header-right">
-            <span class="teacher-name" id="teacherName">Преподаватель</span>
-            <button class="logout-btn" onclick="logout()">Выйти</button>
+        <div class="logo" onclick="showTab('schedule')">🎓 Xialin | 夏林</div>
+        <div style="display: flex; gap: 16px; align-items: center;">
+            <span id="teacherName"></span>
+            <button onclick="logout()" style="background: #e2e8f0; color: #1e293b; border: none; padding: 8px 20px; border-radius: 30px;">Выйти</button>
         </div>
     </div>
     
     <div class="main-container">
         <div class="sidebar">
-            <div class="nav-item active" onclick="showTab('calendar')">📅 Расписание</div>
+            <div class="nav-item active" onclick="showTab('schedule')">📅 Расписание</div>
             <div class="nav-item" onclick="showTab('students')">👥 Ученики</div>
             <div class="nav-item" onclick="showTab('classes')">🏫 Классы</div>
             <div class="nav-item" onclick="showTab('homework')">📝 Проверка ДЗ</div>
@@ -108,42 +77,35 @@
         </div>
         
         <div class="content">
-            <!-- Вкладка: Расписание (календарь на месяц) -->
-            <div id="calendarTab">
+            <!-- Расписание -->
+            <div id="scheduleTab">
                 <div class="calendar-header">
                     <div class="month-nav">
                         <button onclick="changeMonth(-1)">←</button>
                         <span class="current-month" id="currentMonth">Май 2026</span>
                         <button onclick="changeMonth(1)">→</button>
                     </div>
-                    <button onclick="showAddLessonModal()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px;">+ Добавить урок</button>
+                    <button onclick="openAddLessonModal()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px;">+ Добавить урок</button>
                 </div>
                 <div class="calendar-weekdays" id="weekdays"></div>
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
             
-            <!-- Вкладка: Ученики -->
+            <!-- Ученики (с HSK уровнями) -->
             <div id="studentsTab" class="hidden">
-                <div class="students-header">
-                    <h2 class="page-title">👥 Мои ученики</h2>
-                    <div style="display: flex; gap: 12px;">
-                        <input type="text" class="search-box" id="searchStudent" placeholder="Поиск ученика..." onkeyup="filterStudents()">
-                        <button class="add-student-btn" onclick="openAddStudentModal()">+ Добавить ученика</button>
-                    </div>
-                </div>
+                <h2 class="page-title">👥 Мои ученики</h2>
                 <div class="students-table" id="studentsList"></div>
+                <button onclick="openAddStudentModal()" style="margin-top: 20px;">+ Добавить ученика</button>
             </div>
             
-            <!-- Вкладка: Классы -->
+            <!-- Классы (по HSK уровням) -->
             <div id="classesTab" class="hidden">
-                <div class="students-header">
-                    <h2 class="page-title">🏫 Мои классы</h2>
-                    <button class="add-student-btn" onclick="openCreateClassModal()">+ Создать класс</button>
-                </div>
+                <h2 class="page-title">🏫 Классы HSK</h2>
+                <button onclick="openCreateClassModal()" style="margin-bottom: 20px;">+ Создать класс</button>
                 <div id="classesList" class="classes-grid"></div>
             </div>
             
-            <!-- Вкладка: Проверка ДЗ -->
+            <!-- Проверка ДЗ -->
             <div id="homeworkTab" class="hidden">
                 <h2 class="page-title">📝 Проверка домашних заданий</h2>
                 <div id="homeworkList" class="students-table"></div>
@@ -151,326 +113,208 @@
         </div>
     </div>
     
-    <!-- Модалка добавления ученика -->
+    <!-- Модалки -->
     <div id="addStudentModal" class="modal hidden">
         <div class="modal-content">
             <h3>➕ Добавить ученика</h3>
-            <label>Имя и фамилия</label>
-            <input type="text" id="studentFullName" placeholder="Алексей Петров">
+            <label>Имя</label>
+            <input type="text" id="studentName" placeholder="Имя ученика">
             <label>Логин</label>
-            <input type="text" id="studentUsername" placeholder="username">
+            <input type="text" id="studentUsername">
             <label>Пароль</label>
-            <input type="password" id="studentPassword" placeholder="password">
-            <label>Класс</label>
-            <select id="studentClass">
-                <option value="">Без класса</option>
+            <input type="password" id="studentPassword">
+            <label>Уровень HSK</label>
+            <select id="studentHSK">
+                <option value="1">HSK 1 - Начинающий</option>
+                <option value="2">HSK 2 - Базовый</option>
+                <option value="3">HSK 3 - Средний</option>
+                <option value="4">HSK 4 - Выше среднего</option>
+                <option value="5">HSK 5 - Продвинутый</option>
+                <option value="6">HSK 6 - Мастер</option>
             </select>
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+            <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
                 <button onclick="closeModal('addStudentModal')" style="background: #e2e8f0; color: #1e293b;">Отмена</button>
-                <button onclick="addStudent()" style="background: #3b82f6;">Добавить</button>
+                <button onclick="addStudent()">Добавить</button>
             </div>
         </div>
     </div>
     
-    <!-- Модалка добавления урока в расписание -->
-    <div id="addLessonModal" class="modal hidden">
-        <div class="modal-content">
-            <h3>📅 Добавить урок в расписание</h3>
-            <label>Название урока</label>
-            <input type="text" id="lessonName" placeholder="Урок">
-            <label>Дата</label>
-            <input type="date" id="lessonDate">
-            <label>Время</label>
-            <input type="time" id="lessonTime">
-            <label>Ученик</label>
-            <select id="lessonStudent">
-                <option value="">Выберите ученика</option>
-            </select>
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="closeModal('addLessonModal')" style="background: #e2e8f0; color: #1e293b;">Отмена</button>
-                <button onclick="addLessonToCalendar()" style="background: #3b82f6;">Добавить</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Модалка создания класса -->
     <div id="createClassModal" class="modal hidden">
         <div class="modal-content">
             <h3>🏫 Создать класс</h3>
             <label>Название класса</label>
-            <input type="text" id="className" placeholder="Группа A1">
-            <label>Описание</label>
-            <input type="text" id="classDesc" placeholder="Уровень начинающий">
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="closeModal('createClassModal')" style="background: #e2e8f0; color: #1e293b;">Отмена</button>
-                <button onclick="createClass()" style="background: #3b82f6;">Создать</button>
+            <input type="text" id="className" placeholder="Например: HSK 3 Группа">
+            <label>Уровень HSK</label>
+            <select id="classHSK">
+                <option value="1">HSK 1</option>
+                <option value="2">HSK 2</option>
+                <option value="3">HSK 3</option>
+                <option value="4">HSK 4</option>
+                <option value="5">HSK 5</option>
+                <option value="6">HSK 6</option>
+            </select>
+            <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="closeModal('createClassModal')" style="background: #e2e8f0;">Отмена</button>
+                <button onclick="createClass()">Создать</button>
             </div>
         </div>
     </div>
 
 <script>
-    let currentDate = new Date();
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
-    let currentUser = null;
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
     
-    // Данные
+    // Данные учеников с HSK уровнями и текущими уроками
     let students = [
-        { id: 1, name: 'Алексей Петров', username: 'alex', class: 'Группа A1', progress: 65, avatar: 'АП' },
-        { id: 2, name: 'Мария Иванова', username: 'maria', class: 'Группа A1', progress: 80, avatar: 'МИ' },
-        { id: 3, name: 'Дмитрий Сидоров', username: 'dima', class: 'Группа B1', progress: 45, avatar: 'ДС' },
-        { id: 4, name: 'Елена Козлова', username: 'elena', class: 'Индивидуально', progress: 90, avatar: 'ЕК' },
+        { id: 1, name: 'Анна Смирнова', username: 'anna', hsk_level: 1, current_lesson: 3, current_hsk: 'HSK 1' },
+        { id: 2, name: 'Максим Иванов', username: 'maxim', hsk_level: 2, current_lesson: 5, current_hsk: 'HSK 2' },
+        { id: 3, name: 'Елена Ким', username: 'elena', hsk_level: 3, current_lesson: 2, current_hsk: 'HSK 3' },
+        { id: 4, name: 'Дмитрий Петров', username: 'dmitry', hsk_level: 4, current_lesson: 8, current_hsk: 'HSK 4' },
+        { id: 5, name: 'Ольга Соколова', username: 'olga', hsk_level: 5, current_lesson: 4, current_hsk: 'HSK 5' },
     ];
     
+    // Классы по HSK
     let classes = [
-        { id: 1, name: 'Группа A1', description: 'Начинающий уровень', students: ['Алексей Петров', 'Мария Иванова'], color: '#3b82f6' },
-        { id: 2, name: 'Группа B1', description: 'Средний уровень', students: ['Дмитрий Сидоров'], color: '#10b981' },
-        { id: 3, name: 'Индивидуально', description: 'Индивидуальные занятия', students: ['Елена Козлова'], color: '#f59e0b' },
+        { id: 1, name: 'HSK 1 Группа', hsk_level: 1, students: ['Анна Смирнова'], current_lesson: 3 },
+        { id: 2, name: 'HSK 2 Группа', hsk_level: 2, students: ['Максим Иванов'], current_lesson: 5 },
+        { id: 3, name: 'HSK 3 Группа', hsk_level: 3, students: ['Елена Ким'], current_lesson: 2 },
+        { id: 4, name: 'HSK 4-5 Продвинутые', hsk_level: 4, students: ['Дмитрий Петров', 'Ольга Соколова'], current_lesson: 6 },
     ];
     
+    // Уроки в расписании
     let lessons = [
-        { id: 1, name: 'Английский язык', date: '2026-05-06', time: '10:00', student: 'Алексей Петров' },
-        { id: 2, name: 'Разговорная практика', date: '2026-05-07', time: '14:00', student: 'Мария Иванова' },
-        { id: 3, name: 'Грамматика', date: '2026-05-08', time: '16:00', student: 'Группа A1' },
-        { id: 4, name: 'IELTS подготовка', date: '2026-05-10', time: '11:00', student: 'Дмитрий Сидоров' },
-        { id: 5, name: 'Business English', date: '2026-05-12', time: '15:00', student: 'Елена Козлова' },
-        { id: 6, name: 'Speaking Club', date: '2026-05-14', time: '18:00', student: 'Группа A1' },
-        { id: 7, name: 'Writing', date: '2026-05-15', time: '12:00', student: 'Мария Иванова' },
+        { id: 1, name: 'HSK 1 Урок 3', date: '2026-05-06', time: '10:00', student: 'Анна Смирнова' },
+        { id: 2, name: 'HSK 2 Урок 5', date: '2026-05-07', time: '14:00', student: 'Максим Иванов' },
+        { id: 3, name: 'HSK 3 Урок 2', date: '2026-05-08', time: '16:00', student: 'Елена Ким' },
     ];
     
-    // Загрузка данных
-    function loadData() {
-        renderCalendar();
-        renderStudents();
-        renderClasses();
-        renderHomework();
-        updateSelects();
-    }
-    
-    // === КАЛЕНДАРЬ ===
     function renderCalendar() {
         const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
         document.getElementById('currentMonth').innerText = `${monthNames[currentMonth]} ${currentYear}`;
         
         const firstDay = new Date(currentYear, currentMonth, 1);
-        const lastDay = new Date(currentYear, currentMonth + 1, 0);
-        const startDayOfWeek = firstDay.getDay();
+        const startDayOfWeek = firstDay.getDay() || 7;
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         
-        const daysInMonth = lastDay.getDate();
-        const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
-        
-        const calendarGrid = document.getElementById('calendarGrid');
-        calendarGrid.innerHTML = '';
-        
-        const weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-        document.getElementById('weekdays').innerHTML = weekdays.map(d => `<div class="weekday">${d}</div>`).join('');
-        
-        let dayCount = 1;
-        let nextMonthDayCount = 1;
-        
-        for (let i = 0; i < 42; i++) {
-            let dayNumber, isCurrentMonth = true;
-            let className = 'calendar-day';
-            
-            if (i < (startDayOfWeek === 0 ? 6 : startDayOfWeek - 1)) {
-                dayNumber = prevMonthDays - ((startDayOfWeek === 0 ? 6 : startDayOfWeek - 1) - i) + 1;
-                isCurrentMonth = false;
-                className += ' other-month';
-            } else if (dayCount > daysInMonth) {
-                dayNumber = nextMonthDayCount++;
-                isCurrentMonth = false;
-                className += ' other-month';
-            } else {
-                dayNumber = dayCount++;
-                isCurrentMonth = true;
-            }
-            
-            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
+        let calendarHtml = '';
+        for (let i = 1; i < startDayOfWeek; i++) calendarHtml += '<div class="calendar-day other-month"></div>';
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const dayLessons = lessons.filter(l => l.date === dateStr);
-            
-            const isToday = dateStr === new Date().toISOString().split('T')[0];
-            if (isToday) className += ' today';
-            
-            calendarGrid.innerHTML += `
-                <div class="${className}">
-                    <div class="day-number">${dayNumber}</div>
-                    ${dayLessons.map(lesson => `
-                        <div class="lesson-item-cal" onclick="startClass(${lesson.id})">
-                            ${lesson.time} ${lesson.name}<br>
-                            <span class="student-name">👤 ${lesson.student}</span>
-                        </div>
+            calendarHtml += `<div class="calendar-day ${dateStr === new Date().toISOString().split('T')[0] ? 'today' : ''}">
+                <div class="day-number">${d}</div>
+                ${dayLessons.map(l => `<div class="lesson-item-cal" onclick="startClass(${l.id})">${l.time} ${l.name}<br><span style="font-size:10px;">👤 ${l.student}</span></div>`).join('')}
+            </div>`;
+        }
+        document.getElementById('calendarGrid').innerHTML = calendarHtml;
+    }
+    
+    function renderStudents() {
+        document.getElementById('studentsList').innerHTML = `
+            <table>
+                <thead><tr><th>Ученик</th><th>Логин</th><th>Уровень</th><th>Текущий урок</th><th>Действия</th></tr></thead>
+                <tbody>
+                    ${students.map(s => `
+                        <tr>
+                            <td><strong>${s.name}</strong></td>
+                            <td>${s.username}</td>
+                            <td><span class="hsk-badge">${s.current_hsk}</span></td>
+                            <td>📖 Урок ${s.current_lesson} / 20</td>
+                            <td><button class="enter-class-btn" onclick="enterClassAsTeacher('${s.name}', ${s.hsk_level}, ${s.current_lesson})">🎥 Войти в класс</button></td>
+                        </tr>
                     `).join('')}
-                </div>
-            `;
+                </tbody>
+            </table>
+        `;
+    }
+    
+    function renderClasses() {
+        document.getElementById('classesList').innerHTML = classes.map(c => `
+            <div class="class-card" onclick="enterClass('${c.name}', ${c.hsk_level})">
+                <div class="class-title">🏫 ${c.name}</div>
+                <div class="class-info">Уровень: HSK ${c.hsk_level} | Текущий урок: ${c.current_lesson}</div>
+                <div>👥 ${c.students.length} учеников: ${c.students.join(', ')}</div>
+                <button class="enter-class-btn" style="margin-top: 16px; width: 100%;" onclick="event.stopPropagation(); enterClassAsTeacher('${c.name}', ${c.hsk_level}, ${c.current_lesson})">🎥 Войти в класс</button>
+            </div>
+        `).join('');
+    }
+    
+    // Вход в класс как учитель
+    function enterClassAsTeacher(studentName, hskLevel, currentLesson) {
+        alert(`🎓 Вход в класс: ${studentName}\n📚 Уровень: HSK ${hskLevel}\n📖 Текущий урок: ${currentLesson}\n\n👩‍🏫 Вы вошли как УЧИТЕЛЬ\n\nДоступно:\n• Управление материалами урока\n• Изменение текущего урока\n• Проверка заданий`);
+        window.location.href = `/virtual-class/?lesson_id=1&role=teacher&student=${encodeURIComponent(studentName)}`;
+    }
+    
+    function enterClass(className, hskLevel) {
+        alert(`🎓 Вход в класс: ${className}\n📚 Уровень: HSK ${hskLevel}\n\n👩‍🏫 Вы вошли как УЧИТЕЛЬ`);
+        window.location.href = `/virtual-class/?lesson_id=1&role=teacher`;
+    }
+    
+    function startClass(lessonId) {
+        window.location.href = `/virtual-class/?lesson_id=${lessonId}&role=teacher`;
+    }
+    
+    function addStudent() {
+        const name = document.getElementById('studentName').value;
+        const username = document.getElementById('studentUsername').value;
+        const hskLevel = document.getElementById('studentHSK').value;
+        if (name && username) {
+            students.push({ 
+                id: students.length + 1, 
+                name: name, 
+                username: username, 
+                hsk_level: parseInt(hskLevel),
+                current_lesson: 1,
+                current_hsk: `HSK ${hskLevel}`
+            });
+            closeModal('addStudentModal');
+            renderStudents();
+            alert(`Ученик ${name} добавлен! Пароль: ${username}123`);
+        }
+    }
+    
+    function createClass() {
+        const name = document.getElementById('className').value;
+        const hskLevel = document.getElementById('classHSK').value;
+        if (name) {
+            classes.push({ id: classes.length + 1, name: name, hsk_level: parseInt(hskLevel), students: [], current_lesson: 1 });
+            closeModal('createClassModal');
+            renderClasses();
+            alert(`Класс ${name} (HSK ${hskLevel}) создан!`);
         }
     }
     
     function changeMonth(delta) {
         currentMonth += delta;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        } else if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        else if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         renderCalendar();
     }
     
-    // === УЧЕНИКИ ===
-    function renderStudents() {
-        const container = document.getElementById('studentsList');
-        container.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ученик</th>
-                        <th>Логин</th>
-                        <th>Класс</th>
-                        <th>Прогресс</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${students.map(s => `
-                        <tr>
-                            <td><span class="student-avatar">${s.avatar}</span> ${s.name}</td>
-                            <td>${s.username}</td>
-                            <td>${s.class}</td>
-                            <td><div style="width: 100px; background:#e2e8f0; border-radius:10px;"><div style="width: ${s.progress}%; background:#3b82f6; height:6px; border-radius:10px;"></div></div> ${s.progress}%</td>
-                            <td>
-                                <button class="enter-class-btn" onclick="enterStudentClass('${s.name}')">🎥 Войти в класс</button>
-                                <button onclick="editStudent(${s.id})" style="background:#e2e8f0; color:#1e293b; margin-left:8px;">✏️</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-    
-    function filterStudents() {
-        const search = document.getElementById('searchStudent').value.toLowerCase();
-        const filtered = students.filter(s => s.name.toLowerCase().includes(search));
-        const container = document.getElementById('studentsList');
-        container.innerHTML = `
-            <table>
-                <thead><tr><th>Ученик</th><th>Логин</th><th>Класс</th><th>Прогресс</th><th>Действия</th></tr></thead>
-                <tbody>
-                    ${filtered.map(s => `
-                        <tr>
-                            <td><span class="student-avatar">${s.avatar}</span> ${s.name}</td>
-                            <td>${s.username}</td>
-                            <td>${s.class}</td>
-                            <td><div style="width:100px; background:#e2e8f0; border-radius:10px;"><div style="width:${s.progress}%; background:#3b82f6; height:6px; border-radius:10px;"></div></div> ${s.progress}%</td>
-                            <td><button class="enter-class-btn" onclick="enterStudentClass('${s.name}')">🎥 Войти в класс</button></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-    
-    // === КЛАССЫ ===
-    function renderClasses() {
-        const container = document.getElementById('classesList');
-        container.innerHTML = classes.map(c => `
-            <div class="class-card" onclick="enterClass('${c.name}')">
-                <div class="class-title" style="color: ${c.color}">${c.name}</div>
-                <div class="class-info">${c.description}</div>
-                <div>👥 ${c.students.length} учеников: ${c.students.join(', ')}</div>
-                <button class="enter-class-big" onclick="event.stopPropagation(); enterClass('${c.name}')">🎥 Войти в класс</button>
-            </div>
-        `).join('');
-    }
-    
-    // === ДОМАШНИЕ ЗАДАНИЯ ===
-    function renderHomework() {
-        const homeworks = [
-            { id: 1, student: 'Алексей Петров', lesson: 'Английский язык', answer: 'print("Hello World")', status: 'pending' },
-            { id: 2, student: 'Мария Иванова', lesson: 'Грамматика', answer: 'if x > 0: print("positive")', status: 'pending' }
-        ];
-        
-        const container = document.getElementById('homeworkList');
-        container.innerHTML = `
-            <table>
-                <thead><tr><th>Ученик</th><th>Урок</th><th>Ответ</th><th>Действия</th></tr></thead>
-                <tbody>
-                    ${homeworks.map(hw => `
-                        <tr>
-                            <td>${hw.student}</td>
-                            <td>${hw.lesson}</td>
-                            <td>${hw.answer}</td>
-                            <td><button class="enter-class-btn" onclick="checkHomework(${hw.id})">📝 Проверить</button></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-    
-    // === ДЕЙСТВИЯ ===
-    function enterStudentClass(studentName) {
-        alert(`Вход в класс ученика: ${studentName}\n\nПереход в виртуальный класс...`);
-        window.location.href = `/virtual-class/?lesson_id=1`;
-    }
-    
-    function enterClass(className) {
-        alert(`Вход в класс: ${className}\n\nНачинаем занятие...`);
-        window.location.href = `/virtual-class/?lesson_id=1`;
-    }
-    
-    function startClass(lessonId) {
-        window.location.href = `/virtual-class/?lesson_id=${lessonId}`;
-    }
-    
-    function checkHomework(id) {
-        alert(`Проверка домашнего задания #${id}\n\nОценка: 5/5\nКомментарий: Отлично!`);
-    }
-    
-    function editStudent(id) { alert(`Редактирование ученика`); }
-    function addStudent() { alert('Ученик добавлен!'); closeModal('addStudentModal'); renderStudents(); }
-    function createClass() { alert('Класс создан!'); closeModal('createClassModal'); renderClasses(); }
-    function addLessonToCalendar() { alert('Урок добавлен в расписание!'); closeModal('addLessonModal'); renderCalendar(); }
-    
     function openAddStudentModal() { document.getElementById('addStudentModal').classList.remove('hidden'); }
     function openCreateClassModal() { document.getElementById('createClassModal').classList.remove('hidden'); }
-    function showAddLessonModal() { 
-        document.getElementById('addLessonModal').classList.remove('hidden');
-        updateSelects();
-    }
-    
-    function updateSelects() {
-        const studentSelect = document.getElementById('lessonStudent');
-        if (studentSelect) {
-            studentSelect.innerHTML = '<option value="">Выберите ученика</option>' + 
-                students.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-        }
-        const classSelect = document.getElementById('studentClass');
-        if (classSelect) {
-            classSelect.innerHTML = '<option value="">Без класса</option>' + 
-                classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-        }
-    }
-    
-    function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function openAddLessonModal() { alert('Добавление урока в расписание'); }
     
     function showTab(tab) {
-        document.getElementById('calendarTab').classList.add('hidden');
+        document.getElementById('scheduleTab').classList.add('hidden');
         document.getElementById('studentsTab').classList.add('hidden');
         document.getElementById('classesTab').classList.add('hidden');
         document.getElementById('homeworkTab').classList.add('hidden');
         document.getElementById(`${tab}Tab`).classList.remove('hidden');
-        
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         event.target.closest('.nav-item').classList.add('active');
+        if (tab === 'students') renderStudents();
+        if (tab === 'classes') renderClasses();
     }
     
-    function logout() { window.location.href = '/'; }
+    function logout() { localStorage.removeItem('currentUser'); window.location.href = '/'; }
     
     // Инициализация
-    document.getElementById('teacherName').innerText = 'Анна';
-    loadData();
+    renderCalendar();
+    renderStudents();
+    renderClasses();
+    document.getElementById('teacherName').innerText = 'Преподаватель';
 </script>
 </body>
 </html>
