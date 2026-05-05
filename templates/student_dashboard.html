@@ -46,7 +46,7 @@
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-title">学习进度 | Прогресс</div><div class="stat-value" id="progressPercent">0</div><div>%</div></div>
                 <div class="stat-card"><div class="stat-title">已完成 | Пройдено</div><div class="stat-value" id="completedCount">0</div></div>
-                <div class="stat-card"><div class="stat-title">总课程 | Всего уроков</div><div class="stat-value" id="totalCount">0</div></div>
+                <div class="stat-card"><div class="stat-title">总课程 | Всего уроков HSK</div><div class="stat-value" id="totalCount">0</div></div>
             </div>
             <div class="card">
                 <h3>📚 我的课程 | Мои уроки</h3>
@@ -92,7 +92,7 @@
             
             const container = document.getElementById('lessonsList');
             if (allLessons.length === 0) {
-                container.innerHTML = '<p>暂无课程 | Нет уроков</p>';
+                container.innerHTML = '<p>暂无课程 | Нет уроков HSK</p>';
             } else {
                 container.innerHTML = allLessons.map(lesson => {
                     const isCompleted = currentUser.progress.includes(lesson.id);

@@ -3,95 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xialin - Китайский язык онлайн</title>
+    <title>Xialin - Школа китайского языка</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; }
-        .container { max-width: 400px; margin: 100px auto; background: white; border-radius: 28px; padding: 40px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 12px; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 30px; cursor: pointer; margin-top: 16px; }
-        .error { color: #ef4444; margin-top: 12px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; border-radius: 28px; padding: 48px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        h1 { font-size: 32px; margin-bottom: 8px; color: #1e293b; }
+        .subtitle { color: #64748b; margin-bottom: 32px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 16px; }
+        button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 40px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; }
+        button:hover { background: #2563eb; }
+        .error { color: #ef4444; background: #fee2e2; padding: 12px; border-radius: 12px; margin-top: 16px; font-size: 14px; }
         .hidden { display: none; }
+        .demo-info { margin-top: 24px; font-size: 12px; color: #94a3b8; }
     </style>
 </head>
 <body>
-    <div id="loginView" class="container">
-        <h2 style="text-align: center; margin-bottom: 24px;">🎓 Xialin</h2>
-        <p style="text-align: center; margin-bottom: 24px;">Школа китайского языка</p>
+    <div class="card">
+        <h1>🎓 Xialin</h1>
+        <p class="subtitle">Школа китайского языка онлайн</p>
+        
         <input type="text" id="username" placeholder="Логин" value="student">
         <input type="password" id="password" placeholder="Пароль" value="student123">
         <button onclick="doLogin()">Войти</button>
-        <div id="loginError" class="error hidden"></div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        
+        <div class="demo-info">
+            🔑 Тестовые данные:<br>
+            Ученик: student / student123<br>
+            Учитель: teacher / teacher123
+        </div>
     </div>
 
-    <div id="dashboardContainer"></div>
-
     <script>
-        let currentUser = null;
-
         async function doLogin() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.classList.add('hidden');
             
             try {
-                const res = await fetch('/api/login/', {
+                const response = await fetch('/api/login/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-                const data = await res.json();
+                const data = await response.json();
                 
                 if (data.success) {
-                    currentUser = data.user;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    document.getElementById('loginView').style.display = 'none';
-                    
-                    // Загружаем соответствующую панель
-                    if (currentUser.role === 'teacher') {
-                        loadTeacherPanel();
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    if (data.user.role === 'teacher') {
+                        window.location.href = '/teacher/';
                     } else {
-                        loadStudentDashboard();
+                        window.location.href = '/student/';
                     }
                 } else {
-                    document.getElementById('loginError').innerText = 'Ошибка входа';
-                    document.getElementById('loginError').classList.remove('hidden');
+                    errorDiv.textContent = data.message || 'Ошибка входа';
+                    errorDiv.classList.remove('hidden');
                 }
             } catch(e) {
-                document.getElementById('loginError').innerText = 'Ошибка подключения';
-                document.getElementById('loginError').classList.remove('hidden');
+                errorDiv.textContent = 'Ошибка подключения к серверу';
+                errorDiv.classList.remove('hidden');
             }
         }
-
-        async function loadTeacherPanel() {
-            const container = document.getElementById('dashboardContainer');
-            const res = await fetch('/teacher-panel-content/');
-            const html = await res.text();
-            container.innerHTML = html;
-            
-            // Загружаем скрипты учителя
-            const script = document.createElement('script');
-            script.src = '/static/js/teacher-panel.js';
-            document.body.appendChild(script);
-        }
-
-        async function loadStudentDashboard() {
-            const container = document.getElementById('dashboardContainer');
-            const res = await fetch('/');
-            // Перенаправляем на страницу ученика
-            window.location.href = '/student/';
-        }
-
-        // Проверка сохранённой сессии
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            document.getElementById('loginView').style.display = 'none';
-            if (currentUser.role === 'teacher') {
-                loadTeacherPanel();
-            } else {
-                window.location.href = '/student/';
-            }
-        }
+        
+        // Enter key press
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') doLogin();
+        });
     </script>
 </body>
 </html>
